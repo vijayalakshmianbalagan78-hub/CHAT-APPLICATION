@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        #messages {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+        }
+        
+        .message {
+            margin: 10px 0;
+            padding: 8px;
+            background-color: #e3f2fd;
+            border-radius: 4px;
+        }
+        
+        .message strong {
+            color: #1976d2;
+        }
+        
+        .message small {
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .input-area {
+            display: flex;
+            gap: 10px;
+        }
+        
+        #messageInput {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        #sendBtn {
+            padding: 10px 20px;
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        #sendBtn:hover {
+            background-color: #1565c0;
+        }
+    </style>
+</head>
+<body>
+    <h1>💬 Chat Application</h1>
+    
+    <div id="messages"></div>
+    
+    <div class="input-area">
+        <input 
+            type="text" 
+            id="messageInput" 
+            placeholder="Enter message..."
+            autocomplete="off"
+        >
+        <button id="sendBtn">Send</button>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        // ✅ Initialize Socket.IO
+        const socket = io();
+
+        // ✅ Get DOM elements with null checks
+        const messages = document.getElementById("messages");
+        const input = document.getElementById("messageInput");
+        const sendBtn = document.getElementById("sendBtn");
+
+        if (!messages || !input || !sendBtn) {
+            console.error("❌ Error: Required HTML elements not found!");
+        }
+
+        // ✅ Get or generate username
+        const username =
+            prompt("Enter your name") ||
+            `User-${Math.floor(Math.random() * 1000)}`;
+
+        console.log(`✅ Connected as: ${username}`);
+
+        // ✅ Send message function
+        function sendMessage() {
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            socket.emit("chat-message", {
+                user: username,
+                message: message
+            });
+
+            input.value = "";
+            input.focus();
+        }
+
+        // ✅ Event listeners
+        sendBtn.addEventListener("click", sendMessage);
+
+        input.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                sendMessage();
+            }
+        });
+
+        // ✅ Listen for incoming messages - SAFE version
+        socket.on("chat-message", (data) => {
+            if (!data || !data.user || !data.message) {
+                console.warn("⚠️ Invalid message data:", data);
+                return;
+            }
+
+            const div = document.createElement("div");
+            div.classList.add("message");
+
+            // Create elements safely
+            const userEl = document.createElement("strong");
+            userEl.textContent = data.user;
+
+            const timeEl = document.createElement("small");
+            timeEl.textContent = `(${data.time || new Date().toLocaleTimeString()})`;
+
+            const messageEl = document.createElement("div");
+            messageEl.textContent = data.message;
+
+            // Append elements
+            div.appendChild(userEl);
+            div.appendChild(document.createElement("br"));
+            div.appendChild(timeEl);
+            div.appendChild(document.createElement("br"));
+            div.appendChild(messageEl);
+
+            messages.appendChild(div);
+
+            // Scroll to bottom
+            messages.scrollTop = messages.scrollHeight;
+        });
+
+        // ✅ Connection status
+        socket.on("connect", () => {
+            console.log("✅ Connected to server");
+        });
+
+        socket.on("disconnect", () => {
+            console.log("❌ Disconnected from server");
+        });
+
+        socket.on("error", (error) => {
+            console.error("❌ Socket error:", error);
+        });
+    </script>
+</body>
+</html>
