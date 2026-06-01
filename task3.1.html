@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Tracker Pro</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⏱️ Time Tracker Pro</h1>
+            <button id="settingsBtn" class="settings-btn">⚙️</button>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab-button active" data-tab="today">Today</button>
+            <button class="tab-button" data-tab="weekly">This Week</button>
+            <button class="tab-button" data-tab="stats">Statistics</button>
+        </div>
+        
+        <div id="today" class="tab-content active">
+            <div class="section">
+                <h2>Today's Activity</h2>
+                <div id="todayStats" class="stats-container">
+                    <p class="loading">Loading...</p>
+                </div>
+                <div class="total-time">
+                    <span>Total Time:</span>
+                    <span id="totalToday">0m</span>
+                </div>
+            </div>
+        </div>
+        
+        <div id="weekly" class="tab-content">
+            <div class="section">
+                <h2>Weekly Overview</h2>
+                <div id="weeklyChart" class="chart-container">
+                    <p class="loading">Loading...</p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="stats" class="tab-content">
+            <div class="section">
+                <h2>Productivity Statistics</h2>
+                <div id="statsContainer" class="stats-info">
+                    <p class="loading">Loading...</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <button id="resetBtn" class="reset-btn">Reset Data</button>
+        </div>
+    </div>
+    
+    <script src="popup.js"></script>
+</body>
+</html>
